@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import { migrate } from './db/migrate.js';
-import errorHandler from './middleware/errorHandler.js';
+import errorHandler from './middlewares/errorHandler.js';
 import authRouter from './routes/auth.js';
 
 const app = express()
@@ -31,7 +31,7 @@ app.use(
 app.use(express.json({ limit: '10kb' }))  // body size limit so large attack payloads 
 // express.urlencoded() is middleware that parses URL-encoded form data from 
 // HTTP requests and makes it available in req.body
-app.use(express.urlencoded({ extended: false }))  
+app.use(express.urlencoded({ extended: false }))
 
 // Health Check
 // Rendering any load balancer / uptime monitor
@@ -54,7 +54,7 @@ async function bootstrap() {
     try {
         await migrate()
 
-        app.listen(config.PORT, ()=>{
+        app.listen(config.PORT, () => {
             console.log(`[App] Server running on port ${config.PORT} in ${config.NODE_ENV} mode`)
             console.log(`[APP] Base URL: ${config.BASE_URL}`)
         })
