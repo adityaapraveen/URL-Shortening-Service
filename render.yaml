@@ -38,7 +38,7 @@ services:
 
       - key: BASE_URL
         # Replace with your actual Render app URL after first deploy
-        value: https://your-app-name.onrender.com
+        value: https://URL-Shortening-Service.onrender.com
 
       - key: JWT_SECRET
         # NEVER hardcode this. Use Render's "Generate" button in the dashboard
