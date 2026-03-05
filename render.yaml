@@ -1,0 +1,80 @@
+# render.yaml
+# ─────────────────────────────────────────────────────────────────────────────
+# Render Infrastructure-as-Code configuration.
+#
+# SENIOR DEV NOTE: Defining your infrastructure in a file checked into version
+# control is called "Infrastructure as Code" (IaC). The benefit: your infra
+# is reproducible, reviewable, and documented. You're not clicking through a
+# dashboard hoping you remember the settings from last time.
+#
+# This file tells Render exactly how to build and run your service.
+# Commit this file — it should live in your repo root.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  - type: web
+    name: url-shortener
+    runtime: node
+    plan: free          # Upgrade to 'starter' ($7/mo) for persistent disk + no spin-down
+    region: oregon      # Choose the region closest to your users
+
+    # Build command — runs once on each deploy before startCommand
+    # Install production dependencies only (no devDependencies in prod)
+    buildCommand: npm install --omit=dev
+
+    # Start command — runs migrations first, then starts the server
+    # Migrations are idempotent, so running on every deploy is safe and correct.
+    # This guarantees schema is always up to date before traffic is served.
+    startCommand: npm run migrate && npm start
+
+    healthCheckPath: /health  # Render polls this — deploy only succeeds when it returns 200
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 10000           # Render's default port for web services
+
+      - key: BASE_URL
+        # Replace with your actual Render app URL after first deploy
+        value: https://your-app-name.onrender.com
+
+      - key: JWT_SECRET
+        # NEVER hardcode this. Use Render's "Generate" button in the dashboard
+        # to create a cryptographically random secret, stored as a secret env var.
+        generateValue: true    # Render generates a random value on first deploy
+
+      - key: JWT_EXPIRES_IN
+        value: 7d
+
+      - key: DB_PATH
+        # Points to the persistent disk mount path defined below.
+        # If you're on the free plan (no persistent disk), use ./data/db.sqlite
+        # but know the DB resets on every deploy.
+        value: /var/data/db.sqlite
+
+      - key: BCRYPT_ROUNDS
+        value: 12
+
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+
+      - key: RATE_LIMIT_MAX
+        value: 100
+
+# Persistent Disk — REQUIRED for SQLite in production.
+#
+# SENIOR DEV NOTE: Render's web services have an ephemeral filesystem —
+# any file written during runtime is wiped on the next deploy or restart.
+# SQLite IS a file. Without a persistent disk, your entire database is
+# deleted every time you deploy. This disk survives deploys and restarts.
+#
+# The free plan does NOT include persistent disks.
+# You need at least the 'starter' plan ($7/mo) to use this.
+# Uncomment the block below when you upgrade:
+#
+#  disk:
+#    name: url-shortener-db
+#    mountPath: /var/data     # Must match DB_PATH directory above
+#    sizeGB: 1                # 1GB is plenty for SQLite at this scale

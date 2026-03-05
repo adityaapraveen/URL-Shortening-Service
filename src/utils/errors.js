@@ -1,3 +1,20 @@
+// src/utils/errors.js
+// ─────────────────────────────────────────────────────────────────────────────
+// Custom error classes and error handling utilities.
+//
+// SENIOR DEV NOTE: Don't throw generic `new Error()` in your services.
+// Use typed errors that carry HTTP status codes. This means your error handler
+// middleware can respond correctly without every route needing try/catch logic.
+//
+// Pattern:
+//   throw new AppError('User not found', 404)  ← in a service
+//   → error handler middleware catches it       ← one place, clean JSON response
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Base application error. All intentional errors should use this.
+ * `isOperational: true` means "we expected this could happen" (vs a bug crash).
+ */
 export class AppError extends Error {
   constructor(message, statusCode = 500, isOperational = true) {
     super(message);
