@@ -61,7 +61,7 @@ function formatUrl(row) {
  * @param {object} options      - { customSlug?, title?, expiresAt? }
  */
 
-export async function creatUrl(userId, { original_url, custom_slug, title, expires_at }) {
+export async function createUrl(userId, { original_url, custom_slug, title, expires_at }) {
     if (!original_url) {
         throw new ValidationError('original_url is required')
     }
@@ -198,17 +198,17 @@ export async function deleteUrl(urlId, userId) {
  * Returns the full URL row so the redirect handler can also log the click.
  */
 export async function resolveSlug(slug) {
-  const url = await db.getAsync(
-    'SELECT * FROM urls WHERE slug = ? AND is_active = 1',
-    [slug]
-  );
+    const url = await db.getAsync(
+        'SELECT * FROM urls WHERE slug = ? AND is_active = 1',
+        [slug]
+    );
 
-  if (!url) throw new NotFoundError('Short URL not found or has been deactivated.');
+    if (!url) throw new NotFoundError('Short URL not found or has been deactivated.');
 
-  // Check expiry
-  if (url.expires_at && url.expires_at < Math.floor(Date.now() / 1000)) {
-    throw new NotFoundError('This short URL has expired.');
-  }
+    // Check expiry
+    if (url.expires_at && url.expires_at < Math.floor(Date.now() / 1000)) {
+        throw new NotFoundError('This short URL has expired.');
+    }
 
-  return url;
+    return url;
 }
