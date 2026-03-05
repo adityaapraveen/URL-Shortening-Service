@@ -19,6 +19,9 @@ const config = {
     // Public-facing base URL — used to build short links.
     BASE_URL: requireEnv('BASE_URL', 'http://localhost:3000'),
 
+    // Frontend URL — used for CORS in production
+    FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+
     // Auth — MUST be a long random secret in production
     JWT_SECRET: requireEnv('JWT_SECRET', 'CHANGE_THIS_IN_PRODUCTION'),
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',

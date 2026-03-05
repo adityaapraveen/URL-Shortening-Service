@@ -33,7 +33,7 @@ if (config.NODE_ENV === 'production') {
 app.use(helmet());
 app.use(
   cors({
-    origin: config.NODE_ENV === 'production' ? config.BASE_URL : '*',
+    origin: config.NODE_ENV === 'production' ? config.FRONTEND_URL : '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
@@ -61,7 +61,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authLimiter, authRouter);
 
 // All other API routes get the general limiter (100 req/15min)
-app.use('/api/urls',      apiLimiter, urlRouter);
+app.use('/api/urls', apiLimiter, urlRouter);
 app.use('/api/analytics', apiLimiter, analyticsRouter);
 
 // ─── Redirect Route ───────────────────────────────────────────────────────────
